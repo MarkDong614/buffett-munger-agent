@@ -4,7 +4,11 @@ version = "0.1.0"
 description = "A value investing stock analysis agent powered by LLM"
 readme = "README.md"
 requires-python = ">=3.14"
-dependencies = []
+dependencies = [
+    "pandas<3.0",
+    "pydantic>=2.12.5",
+    "tushare>=1.4.25",
+]
 
 [project.scripts]
 buffett-munger-agent = "buffett_munger_agent.__main__:main"
@@ -15,3 +19,13 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/buffett_munger_agent"]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+]
+
+[tool.pytest.ini_options]
+markers = [
+    "integration: 需要外部服务（如 Tushare API），CI 中默认跳过",
+]
