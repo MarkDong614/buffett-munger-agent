@@ -5,6 +5,7 @@ description = "A value investing stock analysis agent powered by LLM"
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
+    "mcp>=1.26.0",
     "pandas<3.0",
     "pydantic>=2.12.5",
     "tushare>=1.4.25",
