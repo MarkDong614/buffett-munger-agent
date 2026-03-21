@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(uv init:*)",
+      "Bash(mkdir -p src/buffett_munger_agent)",
+      "Bash(mv main.py src/buffett_munger_agent/__main__.py)",
+      "Bash(touch src/buffett_munger_agent/__init__.py)",
+      "Bash(uv venv:*)",
+      "Bash(uv sync:*)",
+      "Bash(uv run:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
+    ]
+  }
+}
