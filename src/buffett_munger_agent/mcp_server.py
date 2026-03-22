@@ -126,20 +126,55 @@ def get_stock_daily_indicators(
         raise ValueError(f"未知错误：{exc}") from exc
 
 
+_VALID_SORT_FIELDS = {"pe", "pe_ttm", "pb", "ps_ttm", "turnover_rate", "total_mv", "circ_mv"}
+
+
 @mcp.tool()
-def get_market_daily_indicators(trade_date: str) -> str:
+def get_market_daily_indicators(
+    trade_date: str,
+    sort_by: str | None = None,
+    ascending: bool = True,
+    limit: int | None = 50,
+) -> str:
     """获取 A 股全市场指定交易日的每日市场指标快照。
 
     Args:
         trade_date: 交易日期，格式 "YYYYMMDD"，如 "20240115"。
+        sort_by: 排序字段，可选值：pe、pe_ttm、pb、ps_ttm、turnover_rate、total_mv、circ_mv。
+                 为 None 时不排序。字段值为 None 的记录统一排在末尾。
+        ascending: True 升序（默认）/ False 降序。仅在 sort_by 不为 None 时生效。
+        limit: 返回条数上限，默认 50。仅允许 None 或非负整数；
+               传入 None 时返回全部数据（可能超出 token 限制）。
+               传入负值或非整数时抛出 ValueError。
 
     Returns:
-        当日全市场所有股票的指标 JSON 数组，每条记录包含 ts_code、pe、pe_ttm、pb、ps_ttm、
-        turnover_rate、total_mv（万元）、circ_mv（万元）等字段。
+        按指定字段排序并截取后的股票指标 JSON 数组，每条记录包含 ts_code、pe、pe_ttm、pb、
+        ps_ttm、turnover_rate、total_mv（万元）、circ_mv（万元）等字段。
         非交易日时返回空数组 []。
     """
     try:
+        if sort_by is not None and sort_by not in _VALID_SORT_FIELDS:
+            raise ValueError(
+                f"sort_by 字段无效：'{sort_by}'。"
+                f"合法值：{', '.join(sorted(_VALID_SORT_FIELDS))}"
+            )
+
+        if limit is not None:
+            if isinstance(limit, bool) or not isinstance(limit, int):
+                raise ValueError("limit 必须为非负整数或 None。")
+            if limit < 0:
+                raise ValueError("limit 不能为负数。")
+
         indicators = _get_fetcher().get_market_daily_indicators(trade_date)
+
+        if sort_by is not None:
+            none_items = [x for x in indicators if getattr(x, sort_by) is None]
+            non_none_items = [x for x in indicators if getattr(x, sort_by) is not None]
+            non_none_items.sort(key=lambda x: getattr(x, sort_by), reverse=not ascending)  # type: ignore[arg-type]
+            indicators = non_none_items + none_items
+
+        indicators = indicators[:limit]
+
         return json.dumps(
             [ind.model_dump() for ind in indicators],
             ensure_ascii=False,
@@ -147,6 +182,8 @@ def get_market_daily_indicators(trade_date: str) -> str:
         )
     except DataFetchError as exc:
         raise ValueError(f"数据获取失败：{exc}") from exc
+    except ValueError:
+        raise
     except Exception as exc:
         raise ValueError(f"未知错误：{exc}") from exc
 

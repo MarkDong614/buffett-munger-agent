@@ -9,7 +9,21 @@
       "Bash(uv sync:*)",
       "Bash(uv run:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(openspec status:*)",
+      "Bash(openspec instructions:*)",
+      "Bash(uv add:*)",
+      "WebFetch(domain:tushare.pro)",
+      "Bash(openspec new:*)",
+      "mcp__plugin_context7_context7__resolve-library-id",
+      "Bash(python -c \"import mcp; print\\(mcp.__version__\\)\")",
+      "Bash(find /Users/markdong/projects/buffett-munger-agent/.venv/lib -name server.py -path */mcp/*)",
+      "Bash(find /Users/markdong/projects/buffett-munger-agent/.venv/lib -name *.py -path */mcp/server*)",
+      "mcp__buffett-munger-mcp__get_company_info",
+      "mcp__buffett-munger-mcp__get_fundamentals",
+      "mcp__buffett-munger-mcp__get_price_history",
+      "mcp__buffett-munger-mcp__get_market_daily_indicators",
+      "Bash(echo \"incomplete_count=$?\")"
     ]
   }
 }
