@@ -68,21 +68,23 @@ def get_price_history(
     start_date: str,
     end_date: str,
     freq: str = "D",
+    adjust: str = "",
 ) -> str:
-    """获取 A 股历史价格数据（后复权 OHLCV）。
+    """获取 A 股历史价格数据（OHLCV）。
 
     Args:
         ts_code: Tushare 格式股票代码，如 "600519.SH"。
         start_date: 开始日期，格式 "YYYYMMDD"，如 "20240101"。
         end_date: 结束日期，格式 "YYYYMMDD"，如 "20241231"。
         freq: 时间粒度，"D" 日线（默认）/ "W" 周线 / "M" 月线。
+        adjust: 复权方式，"" 不复权（默认）/ "qfq" 前复权 / "hfq" 后复权。
 
     Returns:
         按日期升序排列的 K 线数据 JSON 数组，每条记录包含 date、open、high、low、close、volume。
         时间范围内无数据时返回空数组 []。
     """
     try:
-        bars = _get_fetcher().get_price_history(ts_code, start_date, end_date, freq)
+        bars = _get_fetcher().get_price_history(ts_code, start_date, end_date, freq, adjust)
         return json.dumps(
             [bar.model_dump(mode="json") for bar in bars],
             ensure_ascii=False,

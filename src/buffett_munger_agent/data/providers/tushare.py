@@ -6,8 +6,10 @@ from datetime import date
 import tushare as ts
 
 from buffett_munger_agent.data.models import (
+    Adjust,
     CompanyInfo,
     DataFetchError,
+    Freq,
     PriceBar,
     StockFundamentals,
 )
@@ -117,12 +119,13 @@ class TushareProvider:
         ts_code: str,
         start_date: str,
         end_date: str,
-        freq: str = "D",
+        freq: Freq = "D",
+        adjust: Adjust = "",
     ) -> list[PriceBar]:
-        """获取股票历史价格数据（后复权 OHLCV）。
+        """获取股票历史价格数据（OHLCV）。
 
-        通过 ts.pro_bar() 接口获取，adj='hfq' 为后复权。
-        vol 单位为手，amount 单位为千元。
+        通过 ts.pro_bar() 接口获取。vol 单位为手，amount 单位为千元。
+        adjust: "" 不复权 / "qfq" 前复权 / "hfq" 后复权。
         """
         try:
             df = ts.pro_bar(
@@ -130,7 +133,7 @@ class TushareProvider:
                 start_date=start_date,
                 end_date=end_date,
                 freq=freq,
-                adj="hfq",
+                adj=adjust or None,
                 api=self._pro,
             )
             if df is None or df.empty:

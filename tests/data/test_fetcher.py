@@ -73,9 +73,38 @@ class TestGetPriceHistory:
         result = stock_fetcher.get_price_history("600519.SH", "20240101", "20240131", "D")
 
         mock_provider.get_price_history.assert_called_once_with(
-            "600519.SH", "20240101", "20240131", "D"
+            "600519.SH", "20240101", "20240131", "D", ""
         )
         assert result == expected
+
+    def test_default_adjust_is_no_adjustment(self, fetcher):
+        stock_fetcher, mock_provider = fetcher
+        mock_provider.get_price_history.return_value = []
+
+        stock_fetcher.get_price_history("600519.SH", "20240101", "20240131")
+
+        _, _, _, _, adjust = mock_provider.get_price_history.call_args.args
+        assert adjust == ""
+
+    def test_passes_qfq_adjust_to_provider(self, fetcher):
+        stock_fetcher, mock_provider = fetcher
+        mock_provider.get_price_history.return_value = []
+
+        stock_fetcher.get_price_history("600519.SH", "20240101", "20240131", adjust="qfq")
+
+        mock_provider.get_price_history.assert_called_once_with(
+            "600519.SH", "20240101", "20240131", "D", "qfq"
+        )
+
+    def test_passes_hfq_adjust_to_provider(self, fetcher):
+        stock_fetcher, mock_provider = fetcher
+        mock_provider.get_price_history.return_value = []
+
+        stock_fetcher.get_price_history("600519.SH", "20240101", "20240131", adjust="hfq")
+
+        mock_provider.get_price_history.assert_called_once_with(
+            "600519.SH", "20240101", "20240131", "D", "hfq"
+        )
 
     def test_returns_empty_list_when_no_data(self, fetcher):
         stock_fetcher, mock_provider = fetcher

@@ -1,9 +1,12 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import Optional
+from typing import Literal, Optional
 
 from pydantic import BaseModel
+
+type Freq = Literal["D", "W", "M"]
+type Adjust = Literal["hfq", "qfq", ""]
 
 
 class DataFetchError(Exception):
