@@ -8,6 +8,7 @@ import tushare as ts
 from buffett_munger_agent.data.models import (
     Adjust,
     CompanyInfo,
+    DailyIndicators,
     DataFetchError,
     Freq,
     PriceBar,
@@ -34,6 +35,21 @@ def _to_str(series, field: str) -> str | None:
         return str(val) if val is not None and str(val).strip() else None
     except (KeyError, TypeError):
         return None
+
+
+def _row_to_daily_indicators(row) -> DailyIndicators:
+    """将 daily_basic DataFrame 行转为 DailyIndicators 对象。"""
+    return DailyIndicators(
+        ts_code=str(row["ts_code"]),
+        trade_date=str(row["trade_date"]),
+        pe=_to_float(row, "pe"),
+        pe_ttm=_to_float(row, "pe_ttm"),
+        pb=_to_float(row, "pb"),
+        ps_ttm=_to_float(row, "ps_ttm"),
+        turnover_rate=_to_float(row, "turnover_rate"),
+        total_mv=_to_float(row, "total_mv"),
+        circ_mv=_to_float(row, "circ_mv"),
+    )
 
 
 class TushareProvider:
@@ -239,3 +255,44 @@ class TushareProvider:
             raise
         except Exception as e:
             raise DataFetchError(f"获取 {ts_code} 公司信息失败：{e}") from e
+
+    def get_stock_daily_indicators(
+        self,
+        ts_code: str,
+        start_date: str | None = None,
+        end_date: str | None = None,
+    ) -> list[DailyIndicators]:
+        """按股票代码查询一段时间的每日市场指标。
+
+        调用 daily_basic 接口，以 ts_code 为主键过滤，按日期升序返回。
+        不传日期时 Tushare 默认返回最近一个交易日数据。
+        """
+        try:
+            kwargs: dict = {"ts_code": ts_code}
+            if start_date:
+                kwargs["start_date"] = start_date
+            if end_date:
+                kwargs["end_date"] = end_date
+            df = self._pro.daily_basic(**kwargs)
+            if df is None or df.empty:
+                raise DataFetchError(f"未找到股票 {ts_code} 的每日指标数据，请确认代码是否正确")
+            df = df.sort_values("trade_date", ascending=True)
+            return [_row_to_daily_indicators(row) for _, row in df.iterrows()]
+        except DataFetchError:
+            raise
+        except Exception as e:
+            raise DataFetchError(f"获取 {ts_code} 每日指标数据失败：{e}") from e
+
+    def get_market_daily_indicators(self, trade_date: str) -> list[DailyIndicators]:
+        """按交易日期查询全市场所有股票的每日市场指标快照。
+
+        调用 daily_basic 接口，以 trade_date 为主键，返回当日全市场数据。
+        非交易日时 Tushare 返回空数据，本方法返回空列表。
+        """
+        try:
+            df = self._pro.daily_basic(trade_date=trade_date)
+            if df is None or df.empty:
+                return []
+            return [_row_to_daily_indicators(row) for _, row in df.iterrows()]
+        except Exception as e:
+            raise DataFetchError(f"获取 {trade_date} 全市场每日指标数据失败：{e}") from e

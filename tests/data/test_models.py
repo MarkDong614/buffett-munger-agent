@@ -4,6 +4,7 @@ import pytest
 
 from buffett_munger_agent.data.models import (
     CompanyInfo,
+    DailyIndicators,
     DataFetchError,
     PriceBar,
     StockFundamentals,
@@ -64,6 +65,44 @@ class TestCompanyInfo:
         info = CompanyInfo(ts_code="000001.SZ", name="平安银行", industry="银行")
         assert info.sector is None
         assert info.market_cap is None
+
+
+class TestDailyIndicators:
+    def test_required_fields_only(self):
+        ind = DailyIndicators(ts_code="600519.SH", trade_date="20240115")
+        assert ind.ts_code == "600519.SH"
+        assert ind.trade_date == "20240115"
+
+    def test_optional_fields_default_to_none(self):
+        ind = DailyIndicators(ts_code="600519.SH", trade_date="20240115")
+        assert ind.pe is None
+        assert ind.pe_ttm is None
+        assert ind.pb is None
+        assert ind.ps_ttm is None
+        assert ind.turnover_rate is None
+        assert ind.total_mv is None
+        assert ind.circ_mv is None
+
+    def test_partial_data_does_not_raise(self):
+        ind = DailyIndicators(ts_code="000001.SZ", trade_date="20240115", pe=10.5, pb=1.2)
+        assert ind.pe == 10.5
+        assert ind.pb == 1.2
+        assert ind.ps_ttm is None
+
+    def test_full_data(self):
+        ind = DailyIndicators(
+            ts_code="600519.SH",
+            trade_date="20240115",
+            pe=30.0,
+            pe_ttm=28.5,
+            pb=8.5,
+            ps_ttm=10.2,
+            turnover_rate=0.5,
+            total_mv=2000000.0,
+            circ_mv=1800000.0,
+        )
+        assert ind.total_mv == 2000000.0
+        assert ind.circ_mv == 1800000.0
 
 
 class TestDataFetchError:

@@ -61,6 +61,24 @@ class PriceBar(BaseModel):
     amount: Optional[float] = None
 
 
+class DailyIndicators(BaseModel):
+    """股票每日市场指标（估值与交易活跃度）。
+
+    数据来源：Tushare daily_basic 接口。
+    total_mv 和 circ_mv 单位为万元。
+    """
+
+    ts_code: str
+    trade_date: str                         # 交易日期，格式 YYYYMMDD
+    pe: Optional[float] = None              # 市盈率（静态）
+    pe_ttm: Optional[float] = None          # 市盈率（TTM）
+    pb: Optional[float] = None              # 市净率
+    ps_ttm: Optional[float] = None          # 市销率（TTM）
+    turnover_rate: Optional[float] = None   # 换手率（%）
+    total_mv: Optional[float] = None        # 总市值（万元）
+    circ_mv: Optional[float] = None         # 流通市值（万元）
+
+
 class CompanyInfo(BaseModel):
     """公司基础信息。
 

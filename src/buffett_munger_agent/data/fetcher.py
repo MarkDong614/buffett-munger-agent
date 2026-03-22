@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from buffett_munger_agent.data.models import Adjust, CompanyInfo, Freq, PriceBar, StockFundamentals
+from buffett_munger_agent.data.models import Adjust, CompanyInfo, DailyIndicators, Freq, PriceBar, StockFundamentals
 from buffett_munger_agent.data.providers.tushare import TushareProvider
 
 
@@ -44,3 +44,26 @@ class StockFetcher:
             ts_code: Tushare 格式股票代码，如 "600519.SH"
         """
         return self._provider.get_company_info(ts_code)
+
+    def get_stock_daily_indicators(
+        self,
+        ts_code: str,
+        start_date: str | None = None,
+        end_date: str | None = None,
+    ) -> list[DailyIndicators]:
+        """按股票代码查询一段时间的每日市场指标。
+
+        Args:
+            ts_code: Tushare 格式股票代码，如 "600519.SH"
+            start_date: 开始日期，格式 "YYYYMMDD"；为 None 时不限制
+            end_date: 结束日期，格式 "YYYYMMDD"；为 None 时不限制（返回最近交易日）
+        """
+        return self._provider.get_stock_daily_indicators(ts_code, start_date, end_date)
+
+    def get_market_daily_indicators(self, trade_date: str) -> list[DailyIndicators]:
+        """按交易日期查询全市场所有股票的每日市场指标快照。
+
+        Args:
+            trade_date: 交易日期，格式 "YYYYMMDD"
+        """
+        return self._provider.get_market_daily_indicators(trade_date)

@@ -74,3 +74,50 @@ class TestGetCompanyInfoIntegration:
     def test_invalid_code_raises_data_fetch_error(self, provider):
         with pytest.raises(DataFetchError):
             provider.get_company_info("999999.XX")
+
+
+class TestGetStockDailyIndicatorsIntegration:
+    def test_fetch_with_date_range(self, provider):
+        result = provider.get_stock_daily_indicators("600519.SH", "20240101", "20240131")
+        assert isinstance(result, list)
+        if result:
+            ind = result[0]
+            assert ind.ts_code == "600519.SH"
+            assert ind.trade_date >= "20240101"
+            assert ind.trade_date <= "20240131"
+            # 按日期升序
+            dates = [r.trade_date for r in result]
+            assert dates == sorted(dates)
+
+    def test_fetch_without_date_returns_latest(self, provider):
+        result = provider.get_stock_daily_indicators("600519.SH")
+        assert isinstance(result, list)
+        assert len(result) == 1
+        assert result[0].ts_code == "600519.SH"
+
+    def test_invalid_code_raises_data_fetch_error(self, provider):
+        with pytest.raises(DataFetchError):
+            provider.get_stock_daily_indicators("999999.XX")
+
+    def test_optional_fields_may_be_none(self, provider):
+        result = provider.get_stock_daily_indicators("600519.SH", "20240101", "20240131")
+        if result:
+            ind = result[0]
+            # pe_ttm 可能为 None，不应抛出异常
+            assert isinstance(ind.pe_ttm, (float, type(None)))
+
+
+class TestGetMarketDailyIndicatorsIntegration:
+    def test_fetch_trade_date(self, provider):
+        result = provider.get_market_daily_indicators("20240115")
+        assert isinstance(result, list)
+        # 正常交易日应有大量股票
+        assert len(result) > 100
+        for ind in result[:5]:
+            assert ind.trade_date == "20240115"
+            assert ind.ts_code != ""
+
+    def test_non_trade_date_returns_empty(self, provider):
+        # 元旦非交易日
+        result = provider.get_market_daily_indicators("20240101")
+        assert result == []

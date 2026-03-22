@@ -96,6 +96,61 @@ def get_price_history(
         raise ValueError(f"未知错误：{exc}") from exc
 
 
+@mcp.tool()
+def get_stock_daily_indicators(
+    ts_code: str,
+    start_date: str | None = None,
+    end_date: str | None = None,
+) -> str:
+    """获取 A 股个股每日市场指标（PE、PB、换手率、市值等）。
+
+    Args:
+        ts_code: Tushare 格式股票代码，如 "600519.SH"。
+        start_date: 开始日期，格式 "YYYYMMDD"，如 "20240101"；不传则不限制。
+        end_date: 结束日期，格式 "YYYYMMDD"，如 "20241231"；不传则返回最近交易日数据。
+
+    Returns:
+        按日期升序排列的每日指标 JSON 数组，每条记录包含 pe、pe_ttm、pb、ps_ttm、
+        turnover_rate、total_mv（万元）、circ_mv（万元）等字段，缺失字段以 null 表示。
+    """
+    try:
+        indicators = _get_fetcher().get_stock_daily_indicators(ts_code, start_date, end_date)
+        return json.dumps(
+            [ind.model_dump() for ind in indicators],
+            ensure_ascii=False,
+            indent=2,
+        )
+    except DataFetchError as exc:
+        raise ValueError(f"数据获取失败：{exc}") from exc
+    except Exception as exc:
+        raise ValueError(f"未知错误：{exc}") from exc
+
+
+@mcp.tool()
+def get_market_daily_indicators(trade_date: str) -> str:
+    """获取 A 股全市场指定交易日的每日市场指标快照。
+
+    Args:
+        trade_date: 交易日期，格式 "YYYYMMDD"，如 "20240115"。
+
+    Returns:
+        当日全市场所有股票的指标 JSON 数组，每条记录包含 ts_code、pe、pe_ttm、pb、ps_ttm、
+        turnover_rate、total_mv（万元）、circ_mv（万元）等字段。
+        非交易日时返回空数组 []。
+    """
+    try:
+        indicators = _get_fetcher().get_market_daily_indicators(trade_date)
+        return json.dumps(
+            [ind.model_dump() for ind in indicators],
+            ensure_ascii=False,
+            indent=2,
+        )
+    except DataFetchError as exc:
+        raise ValueError(f"数据获取失败：{exc}") from exc
+    except Exception as exc:
+        raise ValueError(f"未知错误：{exc}") from exc
+
+
 def run_mcp_server() -> None:
     """以 stdio transport 启动 MCP Server。
 

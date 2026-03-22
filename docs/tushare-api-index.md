@@ -12,6 +12,7 @@
 * 历史日线 : https://tushare.pro/document/2?doc_id=27
 * 复权行情 : https://tushare.pro/document/2?doc_id=146
 * 通用行情接口 : https://tushare.pro/document/2?doc_id=109
+* 每日指标 : https://tushare.pro/document/2?doc_id=32
 
 ### 财务数据
 * 利润表 : https://tushare.pro/document/2?doc_id=27
