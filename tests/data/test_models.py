@@ -84,7 +84,9 @@ class TestDailyIndicators:
         assert ind.circ_mv is None
 
     def test_partial_data_does_not_raise(self):
-        ind = DailyIndicators(ts_code="000001.SZ", trade_date="20240115", pe=10.5, pb=1.2)
+        ind = DailyIndicators(
+            ts_code="000001.SZ", trade_date="20240115", pe=10.5, pb=1.2
+        )
         assert ind.pe == 10.5
         assert ind.pb == 1.2
         assert ind.ps_ttm is None

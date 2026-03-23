@@ -70,7 +70,9 @@ class TestGetPriceHistory:
         ]
         mock_provider.get_price_history.return_value = expected
 
-        result = stock_fetcher.get_price_history("600519.SH", "20240101", "20240131", "D")
+        result = stock_fetcher.get_price_history(
+            "600519.SH", "20240101", "20240131", "D"
+        )
 
         mock_provider.get_price_history.assert_called_once_with(
             "600519.SH", "20240101", "20240131", "D", ""
@@ -90,7 +92,9 @@ class TestGetPriceHistory:
         stock_fetcher, mock_provider = fetcher
         mock_provider.get_price_history.return_value = []
 
-        stock_fetcher.get_price_history("600519.SH", "20240101", "20240131", adjust="qfq")
+        stock_fetcher.get_price_history(
+            "600519.SH", "20240101", "20240131", adjust="qfq"
+        )
 
         mock_provider.get_price_history.assert_called_once_with(
             "600519.SH", "20240101", "20240131", "D", "qfq"
@@ -100,7 +104,9 @@ class TestGetPriceHistory:
         stock_fetcher, mock_provider = fetcher
         mock_provider.get_price_history.return_value = []
 
-        stock_fetcher.get_price_history("600519.SH", "20240101", "20240131", adjust="hfq")
+        stock_fetcher.get_price_history(
+            "600519.SH", "20240101", "20240131", adjust="hfq"
+        )
 
         mock_provider.get_price_history.assert_called_once_with(
             "600519.SH", "20240101", "20240131", "D", "hfq"

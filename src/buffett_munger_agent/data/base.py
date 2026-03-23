@@ -2,7 +2,14 @@ from __future__ import annotations
 
 from typing import Protocol
 
-from buffett_munger_agent.data.models import Adjust, CompanyInfo, DailyIndicators, Freq, PriceBar, StockFundamentals
+from buffett_munger_agent.data.models import (
+    Adjust,
+    CompanyInfo,
+    DailyIndicators,
+    Freq,
+    PriceBar,
+    StockFundamentals,
+)
 
 
 class DataProvider(Protocol):

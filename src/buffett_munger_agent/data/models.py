@@ -69,14 +69,14 @@ class DailyIndicators(BaseModel):
     """
 
     ts_code: str
-    trade_date: str                         # 交易日期，格式 YYYYMMDD
-    pe: Optional[float] = None              # 市盈率（静态）
-    pe_ttm: Optional[float] = None          # 市盈率（TTM）
-    pb: Optional[float] = None              # 市净率
-    ps_ttm: Optional[float] = None          # 市销率（TTM）
-    turnover_rate: Optional[float] = None   # 换手率（%）
-    total_mv: Optional[float] = None        # 总市值（万元）
-    circ_mv: Optional[float] = None         # 流通市值（万元）
+    trade_date: str  # 交易日期，格式 YYYYMMDD
+    pe: Optional[float] = None  # 市盈率（静态）
+    pe_ttm: Optional[float] = None  # 市盈率（TTM）
+    pb: Optional[float] = None  # 市净率
+    ps_ttm: Optional[float] = None  # 市销率（TTM）
+    turnover_rate: Optional[float] = None  # 换手率（%）
+    total_mv: Optional[float] = None  # 总市值（万元）
+    circ_mv: Optional[float] = None  # 流通市值（万元）
 
 
 class CompanyInfo(BaseModel):
@@ -91,20 +91,20 @@ class CompanyInfo(BaseModel):
     """
 
     ts_code: str
-    symbol: Optional[str] = None        # 6 位股票代码（不含交易所后缀）
-    name: str                            # 股票简称
-    fullname: Optional[str] = None      # 股票全称
-    area: Optional[str] = None          # 地域（省份/城市）
-    industry: Optional[str] = None      # 所属行业
-    sector: Optional[str] = None        # 行业板块（stock_basic 无直接字段，保留扩展）
-    market: Optional[str] = None        # 市场类型（主板/创业板/科创板/北交所等）
-    exchange: Optional[str] = None      # 交易所代码（SSE / SZSE / BSE）
-    curr_type: Optional[str] = None     # 交易货币
-    list_status: Optional[str] = None   # 上市状态（L 上市 / D 退市 / P 暂停）
-    list_date: Optional[str] = None     # 上市日期（YYYYMMDD）
-    delist_date: Optional[str] = None   # 退市日期（YYYYMMDD）
-    is_hs: Optional[str] = None         # 沪深港通标的（N / H / S）
-    act_name: Optional[str] = None      # 实控人名称
+    symbol: Optional[str] = None  # 6 位股票代码（不含交易所后缀）
+    name: str  # 股票简称
+    fullname: Optional[str] = None  # 股票全称
+    area: Optional[str] = None  # 地域（省份/城市）
+    industry: Optional[str] = None  # 所属行业
+    sector: Optional[str] = None  # 行业板块（stock_basic 无直接字段，保留扩展）
+    market: Optional[str] = None  # 市场类型（主板/创业板/科创板/北交所等）
+    exchange: Optional[str] = None  # 交易所代码（SSE / SZSE / BSE）
+    curr_type: Optional[str] = None  # 交易货币
+    list_status: Optional[str] = None  # 上市状态（L 上市 / D 退市 / P 暂停）
+    list_date: Optional[str] = None  # 上市日期（YYYYMMDD）
+    delist_date: Optional[str] = None  # 退市日期（YYYYMMDD）
+    is_hs: Optional[str] = None  # 沪深港通标的（N / H / S）
+    act_name: Optional[str] = None  # 实控人名称
     act_ent_type: Optional[str] = None  # 实控人企业性质
     market_cap: Optional[float] = None  # 总市值（万元，来自 daily_basic）
-    description: Optional[str] = None   # 公司介绍（来自 stock_company）
+    description: Optional[str] = None  # 公司介绍（来自 stock_company）

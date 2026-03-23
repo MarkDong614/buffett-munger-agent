@@ -78,7 +78,9 @@ class TestGetCompanyInfoIntegration:
 
 class TestGetStockDailyIndicatorsIntegration:
     def test_fetch_with_date_range(self, provider):
-        result = provider.get_stock_daily_indicators("600519.SH", "20240101", "20240131")
+        result = provider.get_stock_daily_indicators(
+            "600519.SH", "20240101", "20240131"
+        )
         assert isinstance(result, list)
         if result:
             ind = result[0]
@@ -100,7 +102,9 @@ class TestGetStockDailyIndicatorsIntegration:
             provider.get_stock_daily_indicators("999999.XX")
 
     def test_optional_fields_may_be_none(self, provider):
-        result = provider.get_stock_daily_indicators("600519.SH", "20240101", "20240131")
+        result = provider.get_stock_daily_indicators(
+            "600519.SH", "20240101", "20240131"
+        )
         if result:
             ind = result[0]
             # pe_ttm 可能为 None，不应抛出异常

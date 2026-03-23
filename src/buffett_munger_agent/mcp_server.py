@@ -20,7 +20,9 @@ _fetcher: StockFetcher | None = None
 
 def _get_fetcher() -> StockFetcher:
     if _fetcher is None:
-        raise RuntimeError("StockFetcher 尚未初始化，请通过 run_mcp_server() 启动 Server。")
+        raise RuntimeError(
+            "StockFetcher 尚未初始化，请通过 run_mcp_server() 启动 Server。"
+        )
     return _fetcher
 
 
@@ -84,7 +86,9 @@ def get_price_history(
         时间范围内无数据时返回空数组 []。
     """
     try:
-        bars = _get_fetcher().get_price_history(ts_code, start_date, end_date, freq, adjust)
+        bars = _get_fetcher().get_price_history(
+            ts_code, start_date, end_date, freq, adjust
+        )
         return json.dumps(
             [bar.model_dump(mode="json") for bar in bars],
             ensure_ascii=False,
@@ -114,7 +118,9 @@ def get_stock_daily_indicators(
         turnover_rate、total_mv（万元）、circ_mv（万元）等字段，缺失字段以 null 表示。
     """
     try:
-        indicators = _get_fetcher().get_stock_daily_indicators(ts_code, start_date, end_date)
+        indicators = _get_fetcher().get_stock_daily_indicators(
+            ts_code, start_date, end_date
+        )
         return json.dumps(
             [ind.model_dump() for ind in indicators],
             ensure_ascii=False,
@@ -126,7 +132,15 @@ def get_stock_daily_indicators(
         raise ValueError(f"未知错误：{exc}") from exc
 
 
-_VALID_SORT_FIELDS = {"pe", "pe_ttm", "pb", "ps_ttm", "turnover_rate", "total_mv", "circ_mv"}
+_VALID_SORT_FIELDS = {
+    "pe",
+    "pe_ttm",
+    "pb",
+    "ps_ttm",
+    "turnover_rate",
+    "total_mv",
+    "circ_mv",
+}
 
 
 @mcp.tool()
@@ -170,7 +184,9 @@ def get_market_daily_indicators(
         if sort_by is not None:
             none_items = [x for x in indicators if getattr(x, sort_by) is None]
             non_none_items = [x for x in indicators if getattr(x, sort_by) is not None]
-            non_none_items.sort(key=lambda x: getattr(x, sort_by), reverse=not ascending)  # type: ignore[arg-type]
+            non_none_items.sort(
+                key=lambda x: getattr(x, sort_by), reverse=not ascending
+            )  # type: ignore[arg-type]
             indicators = non_none_items + none_items
 
         indicators = indicators[:limit]

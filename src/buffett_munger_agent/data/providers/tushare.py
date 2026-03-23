@@ -24,7 +24,7 @@ def _to_float(series, field: str) -> float | None:
             return None
         f = float(val)
         return None if math.isnan(f) else f
-    except (KeyError, TypeError, ValueError):
+    except KeyError, TypeError, ValueError:
         return None
 
 
@@ -33,7 +33,7 @@ def _to_str(series, field: str) -> str | None:
     try:
         val = series[field]
         return str(val) if val is not None and str(val).strip() else None
-    except (KeyError, TypeError):
+    except KeyError, TypeError:
         return None
 
 
@@ -73,25 +73,41 @@ class TushareProvider:
             # --- 估值及市值指标（最近一个交易日）---
             daily_df = self._pro.daily_basic(ts_code=ts_code, limit=1)
             if daily_df is None or daily_df.empty:
-                raise DataFetchError(f"未找到股票 {ts_code} 的行情数据，请确认代码是否正确")
+                raise DataFetchError(
+                    f"未找到股票 {ts_code} 的行情数据，请确认代码是否正确"
+                )
             daily = daily_df.iloc[0]
 
             # --- 利润表（合并报表，最近一期）---
             # report_type='1' 表示合并报表，取数据默认按 end_date 倒序
             income_df = self._pro.income(ts_code=ts_code, report_type="1")
-            income = income_df.iloc[0] if income_df is not None and not income_df.empty else None
+            income = (
+                income_df.iloc[0]
+                if income_df is not None and not income_df.empty
+                else None
+            )
 
             # --- 资产负债表（合并报表，最近一期）---
             balance_df = self._pro.balancesheet(ts_code=ts_code, report_type="1")
-            balance = balance_df.iloc[0] if balance_df is not None and not balance_df.empty else None
+            balance = (
+                balance_df.iloc[0]
+                if balance_df is not None and not balance_df.empty
+                else None
+            )
 
             # --- 现金流量表（合并报表，最近一期）---
             cashflow_df = self._pro.cashflow(ts_code=ts_code, report_type="1")
-            cashflow = cashflow_df.iloc[0] if cashflow_df is not None and not cashflow_df.empty else None
+            cashflow = (
+                cashflow_df.iloc[0]
+                if cashflow_df is not None and not cashflow_df.empty
+                else None
+            )
 
             # --- 财务指标（最近一期）---
             fina_df = self._pro.fina_indicator(ts_code=ts_code)
-            fina = fina_df.iloc[0] if fina_df is not None and not fina_df.empty else None
+            fina = (
+                fina_df.iloc[0] if fina_df is not None and not fina_df.empty else None
+            )
 
             return StockFundamentals(
                 ts_code=ts_code,
@@ -204,7 +220,9 @@ class TushareProvider:
                 ),
             )
             if basic_df is None or basic_df.empty:
-                raise DataFetchError(f"未找到股票 {ts_code} 的基础信息，请确认代码是否正确")
+                raise DataFetchError(
+                    f"未找到股票 {ts_code} 的基础信息，请确认代码是否正确"
+                )
             basic = basic_df.iloc[0]
 
             # --- 公司详情（stock_company）：公司介绍 ---
@@ -222,7 +240,9 @@ class TushareProvider:
             # --- 最新市值（daily_basic）---
             market_cap = None
             try:
-                mv_df = self._pro.daily_basic(ts_code=ts_code, limit=1, fields="ts_code,total_mv")
+                mv_df = self._pro.daily_basic(
+                    ts_code=ts_code, limit=1, fields="ts_code,total_mv"
+                )
                 if mv_df is not None and not mv_df.empty:
                     market_cap = _to_float(mv_df.iloc[0], "total_mv")
             except Exception:
@@ -275,7 +295,9 @@ class TushareProvider:
                 kwargs["end_date"] = end_date
             df = self._pro.daily_basic(**kwargs)
             if df is None or df.empty:
-                raise DataFetchError(f"未找到股票 {ts_code} 的每日指标数据，请确认代码是否正确")
+                raise DataFetchError(
+                    f"未找到股票 {ts_code} 的每日指标数据，请确认代码是否正确"
+                )
             df = df.sort_values("trade_date", ascending=True)
             return [_row_to_daily_indicators(row) for _, row in df.iterrows()]
         except DataFetchError:
@@ -295,4 +317,6 @@ class TushareProvider:
                 return []
             return [_row_to_daily_indicators(row) for _, row in df.iterrows()]
         except Exception as e:
-            raise DataFetchError(f"获取 {trade_date} 全市场每日指标数据失败：{e}") from e
+            raise DataFetchError(
+                f"获取 {trade_date} 全市场每日指标数据失败：{e}"
+            ) from e
